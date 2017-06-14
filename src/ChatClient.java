@@ -9,14 +9,16 @@ public class ChatClient implements Runnable {
     private ChatClientThread client = null;
 
     private IChatMessageHandler chatMessageHandler = null;
+    private String userName = null;
 
     public ChatClient(String serverName, int serverPort) {
-        this(serverName, serverPort, null);
+        this(serverName, serverPort, null, null );
     }
 
-    public ChatClient(String serverName, int serverPort, IChatMessageHandler chatMessageHandler) {
+    public ChatClient(String serverName, int serverPort, IChatMessageHandler chatMessageHandler, String userName) {
         System.out.println("Establishing connection. Please wait ...");
         try {
+            this.userName = userName;
             this.chatMessageHandler = chatMessageHandler;
             socket = new Socket(serverName, serverPort);
             System.out.println("Connected: " + socket);
@@ -31,18 +33,24 @@ public class ChatClient implements Runnable {
     public void run() {
         while (thread != null) {
             try {
+                send(console.readLine());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            /*try {
                 streamOut.writeUTF(console.readLine());
                 streamOut.flush();
             } catch (IOException ioe) {
                 System.out.println("Sending error: " + ioe.getMessage());
                 stop();
-            }
+            }*/
         }
     }
 
     public void send(String msg) {
+        String var = (this.userName +": " + msg);
         try {
-            streamOut.writeUTF(msg);
+            streamOut.writeUTF(var);
             streamOut.flush();
         } catch (IOException ioe) {
             System.out.println("Sending error: " + ioe.getMessage());
@@ -90,9 +98,9 @@ public class ChatClient implements Runnable {
 
     public static void main(String args[]) {
         ChatClient client = null;
-        if (args.length != 2)
-            System.out.println("Usage: java ChatClient host port");
+        if (args.length != 3)
+            System.out.println("Usage: java ChatClient host port user_name");
         else
-            client = new ChatClient(args[0], Integer.parseInt(args[1]));
+            client = new ChatClient(args[0], Integer.parseInt(args[1]),null, args[2]);
     }
 }

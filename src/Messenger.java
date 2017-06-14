@@ -128,6 +128,13 @@ public class Messenger extends Application implements IChatMessageHandler {
         }
         //buttonConectar.setDisable(true);
 
+        //if (args.length != 2)
+        //    System.out.println("Usage: java ChatClient host port");
+        //else
+        String host = conexao.getText();
+        int port = 4444;
+        chatClient = new ChatClient(host, port, this, "Caio" );
+
     }
 
     public void actionButtonEnviar(){

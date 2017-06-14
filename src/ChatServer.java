@@ -52,12 +52,12 @@ public class ChatServer implements Runnable {
     }
 
     public synchronized void handle(int ID, String input) {
-        if (input.equals(".bye")) {
+        if (input.endsWith(".bye")) {
             clients[findClient(ID)].send(".bye");
             remove(ID);
         } else
             for (int i = 0; i < clientCount; i++)
-                clients[i].send(ID + ": " + input);
+                clients[i].send(input);
     }
 
     public synchronized void remove(int ID) {
