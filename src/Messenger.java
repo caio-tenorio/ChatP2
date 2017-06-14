@@ -106,7 +106,7 @@ public class Messenger extends Application implements IChatMessageHandler {
         //else
         String host = conexao.getText();
         int port = 4444;
-        chatClient = new ChatClient(host, port, this);
+        chatClient = new ChatClient(host, port, this, "Caio" );
 
     }
 
