@@ -8,9 +8,16 @@ public class ChatClient implements Runnable {
     private DataOutputStream streamOut = null;
     private ChatClientThread client = null;
 
+    private IChatMessageHandler chatMessageHandler = null;
+
     public ChatClient(String serverName, int serverPort) {
+        this(serverName, serverPort, null);
+    }
+
+    public ChatClient(String serverName, int serverPort, IChatMessageHandler chatMessageHandler) {
         System.out.println("Establishing connection. Please wait ...");
         try {
+            this.chatMessageHandler = chatMessageHandler;
             socket = new Socket(serverName, serverPort);
             System.out.println("Connected: " + socket);
             start();
@@ -33,12 +40,26 @@ public class ChatClient implements Runnable {
         }
     }
 
-    public void handle(String msg) {
-        if (msg.equals(".bye")) {
-            System.out.println("Good bye. Press RETURN to exit ...");
+    public void send(String msg) {
+        try {
+            streamOut.writeUTF(msg);
+            streamOut.flush();
+        } catch (IOException ioe) {
+            System.out.println("Sending error: " + ioe.getMessage());
             stop();
-        } else
-            System.out.println(msg);
+        }
+    }
+
+    public void handle(String msg) {
+        if (this.chatMessageHandler == null) {
+            if (msg.equals(".bye")) {
+                System.out.println("Good bye. Press RETURN to exit ...");
+                stop();
+            } else
+                System.out.println(msg);
+        } else {
+            this.chatMessageHandler.handle(msg);
+        }
     }
 
     public void start() throws IOException {
