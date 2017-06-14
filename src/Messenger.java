@@ -27,18 +27,20 @@ public class Messenger extends Application implements IChatMessageHandler {
     //TEXT FIELD
     TextField mensagem;
     TextField conexao;
+    TextField userName;
 
     //IMAGEM
-    //Image image;
-    //ImageView chatImagem;
+    Image image;
+    ImageView chatImagem;
 
     @Override
     public void start(Stage primaryStage) {
         //primaryStage
         primaryStage.setTitle("Programação 2 - Sistemas de Informação");
-        primaryStage.setMinHeight(800);
-        primaryStage.setMinWidth(1000);
-        primaryStage.setMaximized(true);
+        primaryStage.setMinHeight(450);
+        primaryStage.setMinWidth(750);
+        primaryStage.setMaximized(false);
+        primaryStage.setResizable(false);
 
         //MAIN PANE
         GridPane mainGrid = new GridPane();
@@ -47,47 +49,58 @@ public class Messenger extends Application implements IChatMessageHandler {
         mainGrid.setHgap(12);
 
         //LABEL
-        Label labelApresenta = new Label("Fucking Messenger");
+        Label labelApresenta = new Label("IMessenger");
         GridPane.setConstraints(labelApresenta, 1,0);
-        //labelApresenta.setAlignment(Pos.CENTER);
+        labelApresenta.setAlignment(Pos.CENTER);
 
         //IMAGEM
-       // image = new Image("chat.jpeg");
+        //image = new Image("Logo.png", 110, 110, false, false);
         //chatImagem = new ImageView(image);
-        //GridPane.setConstraints(chatImagem, 3, 1, 2, 2);
+        //GridPane.setConstraints(chatImagem, 0, 0);
 
         //TEXT AREA PARA CONVERSA
         conversa = new TextArea();
         conversa.setPromptText("Conversa será exibida aqui");
         conversa.setEditable(false);
-        GridPane.setConstraints(conversa,1,1, 2, 2);
+        GridPane.setConstraints(conversa,1,2, 2, 2);
+        conversa.setDisable(true);
 
         //TEXT FIELD MENSAGEM
         mensagem = new TextField();
         mensagem.setPromptText("Digite sua mensagem");
-        GridPane.setConstraints(mensagem, 1,3, 2, 1);
+        GridPane.setConstraints(mensagem, 1,4, 2, 1);
+        mensagem.setDisable(true);
 
         //TEXT FIELD CONEXAO
         conexao = new TextField();
         conexao.setPromptText("Insira IP");
         GridPane.setConstraints(conexao, 2, 0);
 
+        //TEXT FIELD USERNAME
+        userName = new TextField();
+        userName.setPromptText("Nome do usuário");
+        GridPane.setConstraints(userName, 2, 1);
+
+
         //BUTTONS
 
-        //CONECTAR
-        buttonConectar = new Button("Conectar");
-        buttonConectar.getStyleClass().add("button-conectar");
-        GridPane.setConstraints(buttonConectar, 3, 0);
-        buttonConectar.setOnAction(e -> actionButtonConectar());
+            //CONECTAR
+            buttonConectar = new Button("Conectar");
+            buttonConectar.getStyleClass().add("button-conectar");
+            GridPane.setConstraints(buttonConectar, 3, 0);
+            buttonConectar.setOnAction(e -> actionButtonConectar());
+            buttonConectar.setPrefWidth(110);
 
-        //ENVIAR
-        buttonEnviar = new Button("Enviar");
-        buttonEnviar.getStyleClass().add("button-enviar");
-        GridPane.setConstraints(buttonEnviar,3, 3);
-        buttonEnviar.setOnAction(e -> actionButtonEnviar());
+            //ENVIAR
+            buttonEnviar = new Button("Enviar");
+            buttonEnviar.getStyleClass().add("button-enviar");
+            GridPane.setConstraints(buttonEnviar,3, 4);
+            buttonEnviar.setOnAction(e -> actionButtonEnviar());
+            buttonEnviar.setPrefWidth(110);
+            buttonEnviar.setDisable(true);
 
         //GRID CHILDS
-        mainGrid.getChildren().addAll(labelApresenta, conversa, buttonConectar, buttonEnviar, mensagem, conexao);
+        mainGrid.getChildren().addAll(labelApresenta, conversa, buttonConectar, buttonEnviar, mensagem, conexao, userName);
 
         //SCENE
         Scene scene = new Scene(mainGrid, 600, 400);
@@ -98,15 +111,22 @@ public class Messenger extends Application implements IChatMessageHandler {
     }
 
     public void actionButtonConectar(){
+        if (buttonConectar.getText() == "Conectar" ) {
+            String host = conexao.getText();
+            int port = 4444;
+            chatClient = new ChatClient(host, port, this);
+            buttonConectar.setText("Desconectar");
+            buttonConectar.getStyleClass().add("button-desconectar");
+            conversa.setDisable(false);
+            mensagem.setDisable(false);
+            buttonEnviar.setDisable(false);
+            conexao.setDisable(true);
+            userName.setDisable(true);
+        }
+        else{
 
-        //this.chatClient = null;
-
-        //if (args.length != 2)
-        //    System.out.println("Usage: java ChatClient host port");
-        //else
-        String host = conexao.getText();
-        int port = 4444;
-        chatClient = new ChatClient(host, port, this);
+        }
+        //buttonConectar.setDisable(true);
 
     }
 
