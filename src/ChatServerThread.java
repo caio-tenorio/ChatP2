@@ -26,6 +26,17 @@ public class ChatServerThread extends Thread {
         }
     }
 
+    public void send(Message msg) {
+        try {
+            streamOut.writeUTF(msg.toString());
+            streamOut.flush();
+        } catch (IOException ioe) {
+            System.out.println(ID + " ERROR sending: " + ioe.getMessage());
+            server.remove(ID);
+            stop();
+        }
+    }
+
     public int getID() {
         return ID;
     }
@@ -34,6 +45,7 @@ public class ChatServerThread extends Thread {
         System.out.println("Server Thread " + ID + " running.");
         while (true) {
             try {
+                //server.handle(ID, streamIn.readUTF());
                 server.handle(ID, streamIn.readUTF());
             } catch (IOException ioe) {
                 System.out.println(ID + " ERROR reading: " + ioe.getMessage());

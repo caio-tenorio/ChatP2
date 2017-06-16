@@ -72,7 +72,8 @@ public class Messenger extends Application implements IChatMessageHandler {
         mensagem.setDisable(true);
 
         mensagem.setOnAction(event -> {
-            chatClient.send(mensagem.getText());
+            //chatClient.send(Message.fromString(mensagem.getText()));
+            chatClient.send(new TextMessage(userName.getText(), mensagem.getText()));
             mensagem.setText("");
         });
 
@@ -120,6 +121,7 @@ public class Messenger extends Application implements IChatMessageHandler {
         super.stop();
 
         chatClient.send(".bye");
+        //chatClient.send(new ByeMessage());
         chatClient.stop();
     }
 
@@ -157,6 +159,24 @@ public class Messenger extends Application implements IChatMessageHandler {
     @Override
     public synchronized void handle(String msg) {
         conversa.appendText(msg + "\n");
+
+        if (msg.equals(".bye")) {
+            System.out.println("Good bye. Press RETURN to exit ...");
+            chatClient.stop();
+        } else
+            System.out.println(msg);
+    }
+
+    @Override
+    public void handleMessage(Message msg) {
+        conversa.appendText("--" + msg.toString() + "\n");
+
+        if (msg.getCommand().equals("TEXT")) {
+            if (msg.getSource() != null) {
+                conversa.appendText("<" + msg.getSource() + "> ");
+            }
+            conversa.appendText(msg.getMessage() + "\n");
+        }
 
         if (msg.equals(".bye")) {
             System.out.println("Good bye. Press RETURN to exit ...");
