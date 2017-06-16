@@ -71,6 +71,11 @@ public class Messenger extends Application implements IChatMessageHandler {
         GridPane.setConstraints(mensagem, 1,4, 2, 1);
         mensagem.setDisable(true);
 
+        mensagem.setOnAction(event -> {
+            chatClient.send(mensagem.getText());
+            mensagem.setText("");
+        });
+
         //TEXT FIELD CONEXAO
         conexao = new TextField();
         conexao.setPromptText("Insira IP");
@@ -110,11 +115,19 @@ public class Messenger extends Application implements IChatMessageHandler {
         primaryStage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+
+        chatClient.send(".bye");
+        chatClient.stop();
+    }
+
     public void actionButtonConectar(){
         if (buttonConectar.getText() == "Conectar" ) {
             String host = conexao.getText();
             int port = 4444;
-            chatClient = new ChatClient(host, port, this);
+            chatClient = new ChatClient(host, port, this, userName.getText());
             buttonConectar.setText("Desconectar");
             buttonConectar.getStyleClass().add("button-desconectar");
             conversa.setDisable(false);
@@ -131,9 +144,9 @@ public class Messenger extends Application implements IChatMessageHandler {
         //if (args.length != 2)
         //    System.out.println("Usage: java ChatClient host port");
         //else
-        String host = conexao.getText();
-        int port = 4444;
-        chatClient = new ChatClient(host, port, this, "Caio" );
+        //String host = conexao.getText();
+        //int port = 4444;
+        //chatClient = new ChatClient(host, port, this, "Caio" );
 
     }
 
@@ -142,7 +155,7 @@ public class Messenger extends Application implements IChatMessageHandler {
     }
 
     @Override
-    public void handle(String msg) {
+    public synchronized void handle(String msg) {
         conversa.appendText(msg + "\n");
 
         if (msg.equals(".bye")) {
