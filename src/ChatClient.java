@@ -9,6 +9,15 @@ public class ChatClient implements Runnable {
     private ChatClientThread client = null;
 
     private IChatMessageHandler chatMessageHandler = null;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     private String userName = null;
 
     public ChatClient(String serverName, int serverPort) {
@@ -34,7 +43,8 @@ public class ChatClient implements Runnable {
         while (thread != null) {
             try {
                 //send(console.readLine());
-                send(new TextMessage(console.readLine()));
+                //send(new TextMessage(console.readLine()));
+                send(new TextMessage(this.userName, console.readLine()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

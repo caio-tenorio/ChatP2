@@ -15,8 +15,8 @@ public class Message {
         this.message = message;
     }
 
-    public Message(String command, String target, String message) {
-        this(command, null, target, message);
+    public Message(String command, String source, String message) {
+        this(command, source, null, message);
     }
 
     public Message(String command, String message) {
@@ -88,22 +88,12 @@ public class Message {
         } else {
             String[] beforeMessage = parts[0].split(" ", 3);
             command = beforeMessage[0];
-            if (beforeMessage.length >= 3) {
-                target = beforeMessage[2];
-                source = beforeMessage[1];
-                command = beforeMessage[0];
-            } else {
-                if (beforeMessage.length >= 2) {
-                    target = beforeMessage[1];
-                    command = beforeMessage[0];
-                } else {
-                    if (beforeMessage.length >= 1) {
-                        command = beforeMessage[0];
-                    } else {
-                        // erro!
-                    }
-                }
+            if (beforeMessage.length == 0) {
+                // Erro!
             }
+            if (beforeMessage.length >= 1) command = beforeMessage[0];
+            if (beforeMessage.length >= 2) source = beforeMessage[1];
+            if (beforeMessage.length >= 3) target = beforeMessage[2];
         }
         if (parts.length >= 2) {
             message = parts[1];
@@ -114,7 +104,8 @@ public class Message {
 
     public static void main(String[] args) {
         String msg1 = "TEXT :Text1";
-        String msg2 = "TEXT target :Text2";
+        //String msg2 = "TEXT target :Text2";
+        String msg2 = "TEXT source :Text2";
         String msg3 = "TEXT source target :Text3";
 
         Message text1 = Message.fromString(msg1);

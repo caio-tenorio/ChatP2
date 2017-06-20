@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -120,9 +121,10 @@ public class Messenger extends Application implements IChatMessageHandler {
     public void stop() throws Exception {
         super.stop();
 
-        chatClient.send(".bye");
-        //chatClient.send(new ByeMessage());
+        //chatClient.send(".bye");
+        chatClient.send(new ByeMessage());
         chatClient.stop();
+        //Platform.exit();
     }
 
     public void actionButtonConectar(){
@@ -172,8 +174,10 @@ public class Messenger extends Application implements IChatMessageHandler {
         conversa.appendText("--" + msg.toString() + "\n");
 
         if (msg.getCommand().equals("TEXT")) {
-            if (msg.getSource() != null) {
-                conversa.appendText("<" + msg.getSource() + "> ");
+            //if (msg.getSource() != null) {
+            if (msg.getTarget() != null) {
+                //conversa.appendText("<" + msg.getSource() + "> ");
+                conversa.appendText("<" + msg.getTarget() + "> ");
             }
             conversa.appendText(msg.getMessage() + "\n");
         }
@@ -181,7 +185,7 @@ public class Messenger extends Application implements IChatMessageHandler {
         if (msg.equals(".bye")) {
             System.out.println("Good bye. Press RETURN to exit ...");
             chatClient.stop();
-        } else
-            System.out.println(msg);
+        }// else
+        //    System.out.println(msg);
     }
 }
