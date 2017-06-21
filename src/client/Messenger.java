@@ -1,6 +1,5 @@
 package client;
 
-import client.ChatClient;
 import common.IChatMessageHandler;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -56,7 +55,7 @@ public class Messenger extends Application implements IChatMessageHandler {
 
         //LABEL
         Label labelApresenta = new Label("IMessenger");
-        GridPane.setConstraints(labelApresenta, 1,0);
+        GridPane.setConstraints(labelApresenta, 1, 0);
         labelApresenta.setAlignment(Pos.CENTER);
 
         //IMAGEM
@@ -68,13 +67,13 @@ public class Messenger extends Application implements IChatMessageHandler {
         conversa = new TextArea();
         conversa.setPromptText("Conversa será exibida aqui");
         conversa.setEditable(false);
-        GridPane.setConstraints(conversa,1,2, 2, 2);
+        GridPane.setConstraints(conversa, 1, 2, 2, 2);
         conversa.setDisable(true);
 
         //TEXT FIELD MENSAGEM
         mensagem = new TextField();
         mensagem.setPromptText("Digite sua mensagem");
-        GridPane.setConstraints(mensagem, 1,4, 2, 1);
+        GridPane.setConstraints(mensagem, 1, 4, 2, 1);
         mensagem.setDisable(true);
 
         mensagem.setOnAction(event -> {
@@ -112,13 +111,13 @@ public class Messenger extends Application implements IChatMessageHandler {
         //ENVIAR
         buttonEnviar = new Button("Enviar");
         buttonEnviar.getStyleClass().add("button-enviar");
-        GridPane.setConstraints(buttonEnviar,3, 4);
+        GridPane.setConstraints(buttonEnviar, 3, 4);
         buttonEnviar.setOnAction(e -> actionButtonEnviar());
         buttonEnviar.setPrefWidth(110);
         buttonEnviar.setDisable(true);
 
         //GRID CHILDS
-        mainGrid.getChildren().addAll(labelApresenta, conversa, buttonConectar,buttonDesconectar, buttonEnviar, mensagem, conexao, userName);
+        mainGrid.getChildren().addAll(labelApresenta, conversa, buttonConectar, buttonDesconectar, buttonEnviar, mensagem, conexao, userName);
 
         //SCENE
         Scene scene = new Scene(mainGrid, 600, 400);
@@ -137,8 +136,8 @@ public class Messenger extends Application implements IChatMessageHandler {
         }
     }
 
-    public void actionButtonConectar(){
-        if (buttonConectar.getText() == "Conectar" )  {
+    public void actionButtonConectar() {
+        if (buttonConectar.getText() == "Conectar") {
             String host = conexao.getText();
             int port = 4444;
             try {
@@ -151,9 +150,9 @@ public class Messenger extends Application implements IChatMessageHandler {
                 userName.setDisable(true);
                 buttonConectar.setVisible(false);
                 buttonDesconectar.setVisible(true);
-                conversa.appendText("Olá, " + chatClient.getUserName() + "!" +  "\n");
+                conversa.appendText("Olá, " + chatClient.getUserName() + "!" + "\n");
 
-            } catch (ErroConectandoException ece ){
+            } catch (ErroConectandoException ece) {
                 System.out.println(ece.getMessage());
                 buttonDesconectar.setVisible(false);
                 buttonConectar.setVisible(true);
@@ -169,26 +168,42 @@ public class Messenger extends Application implements IChatMessageHandler {
                 alert.setHeaderText("Sua conexão não foi completada!");
                 alert.setContentText("Confira se o host é válido!");
                 alert.showAndWait();
+            } catch (InvalidNicknameException ine) {
+                System.out.println(ine.getMessage());
+                buttonDesconectar.setVisible(false);
+                buttonConectar.setVisible(true);
+                buttonEnviar.setDisable(true);
+                conversa.setDisable(true);
+                mensagem.setDisable(true);
+                conexao.setDisable(false);
+                userName.setDisable(false);
+                mensagem.setText("");
+                //JOptionPane.showMessageDialog(null, "Sua conexão não foi completada! Confira se o host é válido!", "Erro Conectando", JOptionPane.ERROR_MESSAGE);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro Conectando");
+                alert.setHeaderText("Sua conexão não foi completada!");
+                alert.setContentText(ine.getMessage());
+                alert.showAndWait();
             }
         }
     }
 
-    public void actionButtonDesconectar () {
-            chatClient.send(".bye");
-            chatClient.stop();
-            buttonDesconectar.setVisible(false);
-            buttonConectar.setVisible(true);
-            buttonEnviar.setDisable(true);
-            conversa.setDisable(true);
-            mensagem.setDisable(true);
-            conexao.setDisable(false);
-            userName.setDisable(false);
-            mensagem.setText("");
-            conversa.appendText("Você desconectou!" + "\n");
+    public void actionButtonDesconectar() {
+        chatClient.send(".bye");
+        chatClient.stop();
+        buttonDesconectar.setVisible(false);
+        buttonConectar.setVisible(true);
+        buttonEnviar.setDisable(true);
+        conversa.setDisable(true);
+        mensagem.setDisable(true);
+        conexao.setDisable(false);
+        userName.setDisable(false);
+        mensagem.setText("");
+        conversa.appendText("Você desconectou!" + "\n");
 
     }
 
-    public void actionButtonEnviar(){
+    public void actionButtonEnviar() {
         chatClient.send(new TextMessage(userName.getText(), mensagem.getText()));
         mensagem.setText("");
     }
@@ -201,7 +216,7 @@ public class Messenger extends Application implements IChatMessageHandler {
             chatClient.stop();
         } else
             System.out.println(msg);
-            conversa.appendText(msg + "\n");
+        conversa.appendText(msg + "\n");
     }
 
     @Override
@@ -213,7 +228,7 @@ public class Messenger extends Application implements IChatMessageHandler {
             conversa.appendText(msg.getMessage() + "\n");
         }
 
-        if (msg.equals(".bye")) {
+        if (msg.getCommand().equals("BYE")) {
             System.out.println("Good bye. Press RETURN to exit ...");
             chatClient.stop();
         } else {

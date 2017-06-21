@@ -24,13 +24,14 @@ public class ChatClient implements Runnable {
 
     private String userName = null;
 
-    public ChatClient(String serverName, int serverPort) throws ErroConectandoException {
+    public ChatClient(String serverName, int serverPort) throws ErroConectandoException, InvalidNicknameException {
         this(serverName, serverPort, null, null );
     }
 
-    public ChatClient(String serverName, int serverPort, IChatMessageHandler chatMessageHandler, String userName) throws ErroConectandoException {
+    public ChatClient(String serverName, int serverPort, IChatMessageHandler chatMessageHandler, String userName) throws ErroConectandoException, InvalidNicknameException {
         System.out.println("Establishing connection. Please wait ...");
         try {
+            NickMessage nickMessage = new NickMessage(userName);
             this.userName = userName;
             this.chatMessageHandler = chatMessageHandler;
             //socket = new Socket(serverName, serverPort);
@@ -38,7 +39,10 @@ public class ChatClient implements Runnable {
             socket.connect(new InetSocketAddress(serverName, serverPort), 5000);
 
             System.out.println("Connected: " + socket);
+
             start();
+
+            send(nickMessage);
         } catch (SocketTimeoutException ste) {
             System.out.println("Timeout: " + ste.getMessage());
             throw new ErroConectandoException("Erro ao conectar (timeout): " + ste.getMessage());
@@ -46,6 +50,9 @@ public class ChatClient implements Runnable {
             System.out.println("Host unknown: " + uhe.getMessage());
         } catch (IOException ioe) {
             System.out.println("Unexpected exception: " + ioe.getMessage());
+        } catch (InvalidNicknameException ine) {
+            System.out.println("Invalid Nickname: " + ine.getMessage());
+            throw ine;
         }
     }
 
@@ -169,6 +176,8 @@ public class ChatClient implements Runnable {
                 client = new ChatClient(args[0], Integer.parseInt(args[1]), null, args[2]);
             } catch (ErroConectandoException ece){
                 System.out.println(ece.getMessage());
+            } catch (InvalidNicknameException ine) {
+                System.out.println(ine.getMessage());
             }
     }
 }
