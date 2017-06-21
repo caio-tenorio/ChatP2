@@ -90,28 +90,28 @@ public class Messenger extends Application implements IChatMessageHandler {
 
         //BUTTONS
 
-            //CONECTAR
-            buttonConectar = new Button("Conectar");
-            buttonConectar.getStyleClass().add("button-conectar");
-            GridPane.setConstraints(buttonConectar, 3, 0);
-            buttonConectar.setOnAction(e -> actionButtonConectar());
-            buttonConectar.setPrefWidth(110);
+        //CONECTAR
+        buttonConectar = new Button("Conectar");
+        buttonConectar.getStyleClass().add("button-conectar");
+        GridPane.setConstraints(buttonConectar, 3, 0);
+        buttonConectar.setOnAction(e -> actionButtonConectar());
+        buttonConectar.setPrefWidth(110);
 
         //DESCONECTAR
-            buttonDesconectar = new Button("Desconectar");
-            buttonDesconectar.getStyleClass().add("button-desconectar");
-            GridPane.setConstraints(buttonDesconectar, 3, 0);
-            buttonDesconectar.setOnAction(e -> actionButtonDesconectar());
-            buttonDesconectar.setPrefWidth(110);
-            buttonDesconectar.setVisible(false);
+        buttonDesconectar = new Button("Desconectar");
+        buttonDesconectar.getStyleClass().add("button-desconectar");
+        GridPane.setConstraints(buttonDesconectar, 3, 0);
+        buttonDesconectar.setOnAction(e -> actionButtonDesconectar());
+        buttonDesconectar.setPrefWidth(110);
+        buttonDesconectar.setVisible(false);
 
-            //ENVIAR
-            buttonEnviar = new Button("Enviar");
-            buttonEnviar.getStyleClass().add("button-enviar");
-            GridPane.setConstraints(buttonEnviar,3, 4);
-            buttonEnviar.setOnAction(e -> actionButtonEnviar());
-            buttonEnviar.setPrefWidth(110);
-            buttonEnviar.setDisable(true);
+        //ENVIAR
+        buttonEnviar = new Button("Enviar");
+        buttonEnviar.getStyleClass().add("button-enviar");
+        GridPane.setConstraints(buttonEnviar,3, 4);
+        buttonEnviar.setOnAction(e -> actionButtonEnviar());
+        buttonEnviar.setPrefWidth(110);
+        buttonEnviar.setDisable(true);
 
         //GRID CHILDS
         mainGrid.getChildren().addAll(labelApresenta, conversa, buttonConectar,buttonDesconectar, buttonEnviar, mensagem, conexao, userName);
