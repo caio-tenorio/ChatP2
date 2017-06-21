@@ -74,9 +74,7 @@ public class Messenger extends Application implements IChatMessageHandler {
         mensagem.setDisable(true);
 
         mensagem.setOnAction(event -> {
-            //chatClient.send(Message.fromString(mensagem.getText()));
-            chatClient.send(new TextMessage(userName.getText(), mensagem.getText()));
-            mensagem.setText("");
+            actionButtonEnviar();
         });
 
         //TEXT FIELD CONEXAO
@@ -130,10 +128,8 @@ public class Messenger extends Application implements IChatMessageHandler {
     public void stop() throws Exception {
         super.stop();
 
-        //chatClient.send(".bye");
         chatClient.send(new ByeMessage());
         chatClient.stop();
-        //Platform.exit();
     }
 
     public void actionButtonConectar(){
@@ -151,14 +147,6 @@ public class Messenger extends Application implements IChatMessageHandler {
             conversa.appendText("Olá, " + chatClient.getUserName() + "!" +  "\n");
         }
     }
-        //buttonConectar.setDisable(true);
-
-        //if (args.length != 2)
-        //    System.out.println("Usage: java ChatClient host port");
-        //else
-        //String host = conexao.getText();
-        //int port = 4444;
-        //chatClient = new ChatClient(host, port, this, "Caio" );
 
     public void actionButtonDesconectar () {
             chatClient.send(".bye");
@@ -175,9 +163,9 @@ public class Messenger extends Application implements IChatMessageHandler {
 
     }
 
-
     public void actionButtonEnviar(){
-        chatClient.send(mensagem.getText());
+        chatClient.send(new TextMessage(userName.getText(), mensagem.getText()));
+        mensagem.setText("");
     }
 
     @Override
