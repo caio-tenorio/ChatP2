@@ -2,6 +2,8 @@ package server;
 
 import java.net.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -13,6 +15,7 @@ public class ChatServer implements Runnable {
     private ServerSocket server = null;
     private Thread thread = null;
     private int clientCount = 0;
+    private PrintWriter logFileWriter = null;
 
     //private HashMap<Socket, String> mapSocketClient = new HashMap<Socket, String>();
     private HashMap<String, ChatServerThread> mapNicknameToClient = new HashMap<String, ChatServerThread>();
@@ -27,7 +30,35 @@ public class ChatServer implements Runnable {
         return null;
     }
 
-    public ChatServer(int port) throws ErroIniciandoServidorException {
+    public ChatServer(int port) throws ErroIniciandoServidorException, ErroGravandoLogsException {
+        try{
+            //SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            String fileName = dt.format(date);
+
+            File file =new File("logs_" + fileName + ".txt");
+
+            /* This logic is to create the file if the
+             * file is not already present
+             */
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            FileWriter fw = new FileWriter(file,true);
+            //BufferedWriter writer give better performance
+            BufferedWriter bw = new BufferedWriter(fw);
+            this.logFileWriter = new PrintWriter(bw);
+
+            this.logFileWriter.println("-- SERVER STARTING --");
+
+        } catch(IOException ioe) {
+            //System.out.println("Exception occurred:");
+            //ioe.printStackTrace();
+            throw new ErroGravandoLogsException(ioe.getMessage());
+        }
+
         try {
             System.out.println("Binding to port " + port + ", please wait  ...");
             server = new ServerSocket(port);
@@ -59,6 +90,9 @@ public class ChatServer implements Runnable {
 
     public void stop() {
         if (thread != null) {
+            if (logFileWriter != null) {
+                logFileWriter.close();
+            }
             thread.stop();
             thread = null;
         }
@@ -146,6 +180,11 @@ public class ChatServer implements Runnable {
         } else {
             System.out.println("#" + senderID + "# " + msg.toString());
         }
+
+        if (logFileWriter != null) {
+            logFileWriter.println(msg.toString());
+            logFileWriter.flush();
+        }
     }
 
     public synchronized void remove(int ID) {
@@ -196,8 +235,9 @@ public class ChatServer implements Runnable {
             try {
                 server = new ChatServer(Integer.parseInt(args[0]));
             } catch (ErroIniciandoServidorException eise) {
-                System.out.println("Erro iniciando o servidor!" + eise.getMessage());
-
+                System.out.println("Erro iniciando o servidor: " + eise.getMessage());
+            } catch (ErroGravandoLogsException egle) {
+                System.out.println("Erro gravando log das mensagens: " + egle.getMessage());
             }
         }
 
