@@ -20,18 +20,24 @@ public class ChatClient implements Runnable {
 
     private String userName = null;
 
-    public ChatClient(String serverName, int serverPort) {
+    public ChatClient(String serverName, int serverPort) throws ErroConectandoException {
         this(serverName, serverPort, null, null );
     }
 
-    public ChatClient(String serverName, int serverPort, IChatMessageHandler chatMessageHandler, String userName) {
+    public ChatClient(String serverName, int serverPort, IChatMessageHandler chatMessageHandler, String userName) throws ErroConectandoException {
         System.out.println("Establishing connection. Please wait ...");
         try {
             this.userName = userName;
             this.chatMessageHandler = chatMessageHandler;
-            socket = new Socket(serverName, serverPort);
+            //socket = new Socket(serverName, serverPort);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(serverName, serverPort), 5000);
+
             System.out.println("Connected: " + socket);
             start();
+        } catch (SocketTimeoutException ste) {
+            System.out.println("Timeout: " + ste.getMessage());
+            throw new ErroConectandoException("Erro ao conectar (timeout): " + ste.getMessage());
         } catch (UnknownHostException uhe) {
             System.out.println("Host unknown: " + uhe.getMessage());
         } catch (IOException ioe) {
@@ -143,6 +149,10 @@ public class ChatClient implements Runnable {
         if (args.length != 3)
             System.out.println("Usage: java ChatClient host port user_name");
         else
-            client = new ChatClient(args[0], Integer.parseInt(args[1]),null, args[2]);
+            try {
+                client = new ChatClient(args[0], Integer.parseInt(args[1]), null, args[2]);
+            } catch (ErroConectandoException ece){
+                System.out.println(ece.getMessage());
+            }
     }
 }

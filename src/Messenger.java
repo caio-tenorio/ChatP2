@@ -9,6 +9,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import javax.swing.*;
+
 
 public class Messenger extends Application implements IChatMessageHandler {
 
@@ -127,24 +129,45 @@ public class Messenger extends Application implements IChatMessageHandler {
     @Override
     public void stop() throws Exception {
         super.stop();
-
-        chatClient.send(new ByeMessage());
-        chatClient.stop();
+        if (chatClient != null) {
+            chatClient.send(new ByeMessage());
+            chatClient.stop();
+        }
     }
 
     public void actionButtonConectar(){
-        if (buttonConectar.getText() == "Conectar" ) {
+        if (buttonConectar.getText() == "Conectar" )  {
             String host = conexao.getText();
             int port = 4444;
-            chatClient = new ChatClient(host, port, this, userName.getText());
-            conversa.setDisable(false);
-            mensagem.setDisable(false);
-            buttonEnviar.setDisable(false);
-            conexao.setDisable(true);
-            userName.setDisable(true);
-            buttonConectar.setVisible(false);
-            buttonDesconectar.setVisible(true);
-            conversa.appendText("Olá, " + chatClient.getUserName() + "!" +  "\n");
+            try {
+                chatClient = new ChatClient(host, port, this, userName.getText());
+
+                conversa.setDisable(false);
+                mensagem.setDisable(false);
+                buttonEnviar.setDisable(false);
+                conexao.setDisable(true);
+                userName.setDisable(true);
+                buttonConectar.setVisible(false);
+                buttonDesconectar.setVisible(true);
+                conversa.appendText("Olá, " + chatClient.getUserName() + "!" +  "\n");
+
+            } catch (ErroConectandoException ece ){
+                System.out.println(ece.getMessage());
+                buttonDesconectar.setVisible(false);
+                buttonConectar.setVisible(true);
+                buttonEnviar.setDisable(true);
+                conversa.setDisable(true);
+                mensagem.setDisable(true);
+                conexao.setDisable(false);
+                userName.setDisable(false);
+                mensagem.setText("");
+                //JOptionPane.showMessageDialog(null, "Sua conexão não foi completada! Confira se o host é válido!", "Erro Conectando", JOptionPane.ERROR_MESSAGE);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erro Conectando");
+                alert.setHeaderText("Sua conexão não foi completada!");
+                alert.setContentText("Confira se o host é válido!");
+                alert.showAndWait();
+            }
         }
     }
 
