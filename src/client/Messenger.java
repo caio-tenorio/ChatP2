@@ -136,57 +136,60 @@ public class Messenger extends Application implements IChatMessageHandler {
         }
     }
 
+    public void estadoConectar(){
+        buttonDesconectar.setVisible(false);
+        buttonConectar.setVisible(true);
+        buttonEnviar.setDisable(true);
+        conversa.setDisable(true);
+        mensagem.setDisable(true);
+        conexao.setDisable(false);
+        userName.setDisable(false);
+        mensagem.setText("");
+
+    }
+
+    public void estadoDesconectar() {
+        conversa.setDisable(false);
+        mensagem.setDisable(false);
+        buttonEnviar.setDisable(false);
+        conexao.setDisable(true);
+        userName.setDisable(true);
+        buttonConectar.setVisible(false);
+        buttonDesconectar.setVisible(true);
+        conversa.appendText("Olá, " + chatClient.getUserName() + "!" + "\n");
+    }
+
+    public void alertaErro (String title, String header, String content){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     public void actionButtonConectar() {
         if (buttonConectar.getText() == "Conectar") {
             String host = conexao.getText();
             int port = 4444;
             try {
                 chatClient = new ChatClient(host, port, this, userName.getText());
-
-                conversa.setDisable(false);
-                mensagem.setDisable(false);
-                buttonEnviar.setDisable(false);
-                conexao.setDisable(true);
-                userName.setDisable(true);
-                buttonConectar.setVisible(false);
-                buttonDesconectar.setVisible(true);
-                conversa.appendText("Olá, " + chatClient.getUserName() + "!" + "\n");
+                estadoDesconectar();
 
             } catch (ErroConectandoException ece) {
                 System.out.println(ece.getMessage());
-                buttonDesconectar.setVisible(false);
-                buttonConectar.setVisible(true);
-                buttonEnviar.setDisable(true);
-                conversa.setDisable(true);
-                mensagem.setDisable(true);
-                conexao.setDisable(false);
-                userName.setDisable(false);
-                mensagem.setText("");
+                estadoConectar();
                 //JOptionPane.showMessageDialog(null, "Sua conexão não foi completada! Confira se o host é válido!", "Erro Conectando", JOptionPane.ERROR_MESSAGE);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro Conectando");
-                alert.setHeaderText("Sua conexão não foi completada!");
-                alert.setContentText("Confira se o host é válido!");
-                alert.showAndWait();
+                alertaErro("Erro Conectando", "Sua conexão não foi completada!", "Confira se o host é válido!");
             } catch (InvalidNicknameException ine) {
                 System.out.println(ine.getMessage());
-                buttonDesconectar.setVisible(false);
-                buttonConectar.setVisible(true);
-                buttonEnviar.setDisable(true);
-                conversa.setDisable(true);
-                mensagem.setDisable(true);
-                conexao.setDisable(false);
-                userName.setDisable(false);
-                mensagem.setText("");
+                estadoConectar();
                 //JOptionPane.showMessageDialog(null, "Sua conexão não foi completada! Confira se o host é válido!", "Erro Conectando", JOptionPane.ERROR_MESSAGE);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erro Conectando");
-                alert.setHeaderText("Sua conexão não foi completada!");
-                alert.setContentText(ine.getMessage());
-                alert.showAndWait();
+                alertaErro("Erro conectando!", "Sua conexão não foi completada!", ine.getMessage());
             }
         }
     }
+
+
 
     public void actionButtonDesconectar() {
         chatClient.send(".bye");
