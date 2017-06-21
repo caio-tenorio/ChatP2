@@ -192,7 +192,6 @@ public class Messenger extends Application implements IChatMessageHandler {
 
 
     public void actionButtonDesconectar() {
-        chatClient.send(".bye");
         chatClient.stop();
         buttonDesconectar.setVisible(false);
         buttonConectar.setVisible(true);

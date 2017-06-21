@@ -33,7 +33,7 @@ public class NickMessage extends Message {
             throw new InvalidNicknameException("O nickname não pode ser nulo.");
 
         } else if (nickname.length() > 25) {
-            throw new InvalidNicknameException("O nickname não pode conter mais de 25 caracteres.");
+            throw new InvalidNicknameException("O nickname não pode ter mais de 25 caracteres.");
 
         } else if (nickname.equals("")) {
             throw new InvalidNicknameException("O nickname não pode ser vazio.");
