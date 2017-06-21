@@ -27,7 +27,7 @@ public class ChatServer implements Runnable {
         return null;
     }
 
-    public ChatServer(int port) {
+    public ChatServer(int port) throws ErroIniciandoServidorException {
         try {
             System.out.println("Binding to port " + port + ", please wait  ...");
             server = new ServerSocket(port);
@@ -190,9 +190,17 @@ public class ChatServer implements Runnable {
 
     public static void main(String args[]) {
         ChatServer server = null;
-        if (args.length != 1)
+        if (args.length != 1) {
             System.out.println("Usage: java server.ChatServer port");
-        else
-            server = new ChatServer(Integer.parseInt(args[0]));
+        } else {
+            try {
+                server = new ChatServer(Integer.parseInt(args[0]));
+            } catch (ErroIniciandoServidorException eise) {
+                System.out.println("Erro iniciando o servidor!" + eise.getMessage());
+
+            }
+        }
+
+
     }
 }
