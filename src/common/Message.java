@@ -1,3 +1,5 @@
+package common;
+
 /**
  * Created by jamaj on 16/06/17.
  */
@@ -23,7 +25,7 @@ public class Message {
         this(command, null, null, message);
     }
 
-    //public Message(String message) {
+    //public common.Message(String message) {
     public Message(String command) {
 //        this.command = "MSG";
 //        this.source = null;

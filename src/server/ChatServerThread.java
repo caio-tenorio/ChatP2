@@ -1,3 +1,7 @@
+package server;
+
+import common.Message;
+
 import java.net.*;
 import java.io.*;
 

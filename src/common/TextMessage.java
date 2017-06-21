@@ -1,3 +1,5 @@
+package common;
+
 /**
  * Created by jamaj on 16/06/17.
  */
@@ -11,7 +13,7 @@ public class TextMessage extends Message {
         super("TEXT", senderNickname, null, text);
     }
 
-//    public static TextMessage fromString(String message) {
+//    public static common.TextMessage fromString(String message) {
 //
 //    }
 //

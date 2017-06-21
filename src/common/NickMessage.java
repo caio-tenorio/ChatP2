@@ -1,3 +1,5 @@
+package common;
+
 /**
  * Created by jamaj on 16/06/17.
  */
@@ -7,7 +9,7 @@ public class NickMessage extends Message {
         super("NICK", desiredNickname);
     }
 
-//    public static NickMessage fromString(String messageStr) {
+//    public static common.NickMessage fromString(String messageStr) {
 //
 //    }
 //

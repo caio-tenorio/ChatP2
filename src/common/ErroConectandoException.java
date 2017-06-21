@@ -1,3 +1,5 @@
+package common;
+
 /**
  * Created by caio on 20/06/17.
  */

@@ -1,8 +1,14 @@
+package server;
+
 import java.net.*;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import common.ByeMessage;
+import common.ErrorMessage;
+import common.Message;
 
 public class ChatServer implements Runnable {
     private ChatServerThread clients[] = new ChatServerThread[50];
@@ -12,7 +18,7 @@ public class ChatServer implements Runnable {
 
     //private HashMap<Socket, String> mapSocketClient = new HashMap<Socket, String>();
     private HashMap<String, ChatServerThread> mapNicknameToClient = new HashMap<String, ChatServerThread>();
-    //private HashMap<ChatServerThread, String> mapClientToNickname = new HashMap<ChatServerThread, String>();
+    //private HashMap<server.ChatServerThread, String> mapClientToNickname = new HashMap<server.ChatServerThread, String>();
 
     public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
         for (Map.Entry<T, E> entry : map.entrySet()) {
@@ -145,7 +151,7 @@ public class ChatServer implements Runnable {
     public static void main(String args[]) {
         ChatServer server = null;
         if (args.length != 1)
-            System.out.println("Usage: java ChatServer port");
+            System.out.println("Usage: java server.ChatServer port");
         else
             server = new ChatServer(Integer.parseInt(args[0]));
     }

@@ -1,3 +1,7 @@
+package client;
+
+import common.*;
+
 import java.net.*;
 import java.io.*;
 
@@ -49,12 +53,12 @@ public class ChatClient implements Runnable {
         while (thread != null) {
             try {
                 //send(console.readLine());
-                //send(new TextMessage(console.readLine()));
+                //send(new common.TextMessage(console.readLine()));
                 String line = console.readLine();
                 if (line.startsWith("/:")) {
                     send(Message.fromString(line.substring(2)));
                 } else {
-                    //send(new TextMessage(this.userName, console.readLine()));
+                    //send(new common.TextMessage(this.userName, console.readLine()));
                     if (!line.startsWith("/")) {
                         send(new TextMessage(this.userName, line));
                     } else {
@@ -159,7 +163,7 @@ public class ChatClient implements Runnable {
     public static void main(String args[]) {
         ChatClient client = null;
         if (args.length != 3)
-            System.out.println("Usage: java ChatClient host port user_name");
+            System.out.println("Usage: java client.ChatClient host port user_name");
         else
             try {
                 client = new ChatClient(args[0], Integer.parseInt(args[1]), null, args[2]);

@@ -1,5 +1,8 @@
+package client;
+
+import client.ChatClient;
+import common.IChatMessageHandler;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -9,8 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import javax.swing.*;
-
+import common.*;
 
 public class Messenger extends Application implements IChatMessageHandler {
 
