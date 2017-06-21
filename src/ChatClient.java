@@ -109,7 +109,6 @@ public class ChatClient implements Runnable {
             }
         } else {
             this.chatMessageHandler.handleMessage(msg);
-            System.out.println(msg.toString());
         }
     }
 

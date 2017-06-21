@@ -193,13 +193,9 @@ public class Messenger extends Application implements IChatMessageHandler {
 
     @Override
     public void handleMessage(Message msg) {
-        conversa.appendText("--" + msg.toString() + "\n");
-
         if (msg.getCommand().equals("TEXT")) {
-            //if (msg.getSource() != null) {
-            if (msg.getTarget() != null) {
-                //conversa.appendText("<" + msg.getSource() + "> ");
-                conversa.appendText("<" + msg.getTarget() + "> ");
+            if (msg.getSource() != null) {
+                conversa.appendText("<" + msg.getSource() + "> ");
             }
             conversa.appendText(msg.getMessage() + "\n");
         }
@@ -207,7 +203,8 @@ public class Messenger extends Application implements IChatMessageHandler {
         if (msg.equals(".bye")) {
             System.out.println("Good bye. Press RETURN to exit ...");
             chatClient.stop();
-        }// else
-        //    System.out.println(msg);
+        } else {
+            System.out.println(msg);
+        }
     }
 }
