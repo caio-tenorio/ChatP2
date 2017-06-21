@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -19,8 +20,8 @@ public class Messenger extends Application implements IChatMessageHandler {
 
     //BUTTONS
     Button buttonConectar;
-    Button buttonEnviar;
     Button buttonDesconectar;
+    Button buttonEnviar;
 
     //TEXTAREA
     TextArea conversa;
@@ -73,8 +74,7 @@ public class Messenger extends Application implements IChatMessageHandler {
         mensagem.setDisable(true);
 
         mensagem.setOnAction(event -> {
-            chatClient.send(mensagem.getText());
-            mensagem.setText("");
+            actionButtonEnviar();
         });
 
         //TEXT FIELD CONEXAO
@@ -90,30 +90,28 @@ public class Messenger extends Application implements IChatMessageHandler {
 
         //BUTTONS
 
-            //CONECTAR
-            buttonConectar = new Button("Conectar");
-            buttonConectar.getStyleClass().add("button-conectar");
-            GridPane.setConstraints(buttonConectar, 3, 0);
-            buttonConectar.setOnAction(e -> actionButtonConectar());
-            buttonConectar.setPrefWidth(110);
+        //CONECTAR
+        buttonConectar = new Button("Conectar");
+        buttonConectar.getStyleClass().add("button-conectar");
+        GridPane.setConstraints(buttonConectar, 3, 0);
+        buttonConectar.setOnAction(e -> actionButtonConectar());
+        buttonConectar.setPrefWidth(110);
 
-            //DESCONECTAR
-            buttonDesconectar = new Button("Desconectar");
-            buttonDesconectar.getStyleClass().add("button-desconectar");
-            GridPane.setConstraints(buttonDesconectar, 3, 0);
-            buttonDesconectar.setOnAction(e -> actionButtonDesconectar());
-            buttonDesconectar.setPrefWidth(110);
-            buttonDesconectar.setVisible(false);
+        //DESCONECTAR
+        buttonDesconectar = new Button("Desconectar");
+        buttonDesconectar.getStyleClass().add("button-desconectar");
+        GridPane.setConstraints(buttonDesconectar, 3, 0);
+        buttonDesconectar.setOnAction(e -> actionButtonDesconectar());
+        buttonDesconectar.setPrefWidth(110);
+        buttonDesconectar.setVisible(false);
 
-
-
-            //ENVIAR
-            buttonEnviar = new Button("Enviar");
-            buttonEnviar.getStyleClass().add("button-enviar");
-            GridPane.setConstraints(buttonEnviar,3, 4);
-            buttonEnviar.setOnAction(e -> actionButtonEnviar());
-            buttonEnviar.setPrefWidth(110);
-            buttonEnviar.setDisable(true);
+        //ENVIAR
+        buttonEnviar = new Button("Enviar");
+        buttonEnviar.getStyleClass().add("button-enviar");
+        GridPane.setConstraints(buttonEnviar,3, 4);
+        buttonEnviar.setOnAction(e -> actionButtonEnviar());
+        buttonEnviar.setPrefWidth(110);
+        buttonEnviar.setDisable(true);
 
         //GRID CHILDS
         mainGrid.getChildren().addAll(labelApresenta, conversa, buttonConectar,buttonDesconectar, buttonEnviar, mensagem, conexao, userName);
@@ -130,7 +128,7 @@ public class Messenger extends Application implements IChatMessageHandler {
     public void stop() throws Exception {
         super.stop();
 
-        chatClient.send(".bye");
+        chatClient.send(new ByeMessage());
         chatClient.stop();
     }
 
@@ -144,29 +142,30 @@ public class Messenger extends Application implements IChatMessageHandler {
             buttonEnviar.setDisable(false);
             conexao.setDisable(true);
             userName.setDisable(true);
-            buttonDesconectar.setVisible(true);
             buttonConectar.setVisible(false);
+            buttonDesconectar.setVisible(true);
             conversa.appendText("Olá, " + chatClient.getUserName() + "!" +  "\n");
         }
     }
 
     public void actionButtonDesconectar () {
-        chatClient.send(".bye");
-        chatClient.stop();
-        buttonDesconectar.setVisible(false);
-        buttonConectar.setVisible(true);
-        buttonEnviar.setDisable(true);
-        conversa.setDisable(true);
-        mensagem.setDisable(true);
-        conexao.setDisable(false);
-        userName.setDisable(false);
-        mensagem.setText("");
-        conversa.appendText("Você desconectou!" + "\n");
+            chatClient.send(".bye");
+            chatClient.stop();
+            buttonDesconectar.setVisible(false);
+            buttonConectar.setVisible(true);
+            buttonEnviar.setDisable(true);
+            conversa.setDisable(true);
+            mensagem.setDisable(true);
+            conexao.setDisable(false);
+            userName.setDisable(false);
+            mensagem.setText("");
+            conversa.appendText("Você desconectou!" + "\n");
 
     }
 
     public void actionButtonEnviar(){
-        chatClient.send(mensagem.getText());
+        chatClient.send(new TextMessage(userName.getText(), mensagem.getText()));
+        mensagem.setText("");
     }
 
     @Override
@@ -178,5 +177,22 @@ public class Messenger extends Application implements IChatMessageHandler {
         } else
             System.out.println(msg);
             conversa.appendText(msg + "\n");
+    }
+
+    @Override
+    public void handleMessage(Message msg) {
+        if (msg.getCommand().equals("TEXT")) {
+            if (msg.getSource() != null) {
+                conversa.appendText("<" + msg.getSource() + "> ");
+            }
+            conversa.appendText(msg.getMessage() + "\n");
+        }
+
+        if (msg.equals(".bye")) {
+            System.out.println("Good bye. Press RETURN to exit ...");
+            chatClient.stop();
+        } else {
+            System.out.println(msg);
+        }
     }
 }

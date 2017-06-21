@@ -4,5 +4,6 @@
 public interface IChatMessageHandler {
 
     public void handle(String msg);
+    public void handleMessage(Message msg);
 
 }

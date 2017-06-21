@@ -60,6 +60,18 @@ public class ChatServer implements Runnable {
                 clients[i].send(input);
     }
 
+    public synchronized void handle(int ID, Message msg) {
+        if (msg.getCommand().equals("BYE")) {
+            //clients[findClient(ID)].send(".bye");
+            clients[findClient(ID)].send(new ByeMessage());
+            remove(ID);
+        } else {
+            for (int i = 0; i < clientCount; i++) {
+                clients[i].send(msg);
+            }
+        }
+    }
+
     public synchronized void remove(int ID) {
         int pos = findClient(ID);
         if (pos >= 0) {
