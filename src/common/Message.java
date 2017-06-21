@@ -76,6 +76,22 @@ public class Message {
         return this.message;
     }
 
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     //"COMMAND SOURCE TARGET :MESSAGE"
 
     public static Message fromString(String str) {
@@ -116,21 +132,29 @@ public class Message {
         //String msg2 = "TEXT target :Text2";
         String msg2 = "TEXT source :Text2";
         String msg3 = "TEXT source target :Text3";
+        String msg4 = "TEXT source";
+        String msg5 = "TEXT source target";
 
         Message text0 = Message.fromString(msg0);
         Message text1 = Message.fromString(msg1);
         Message text2 = Message.fromString(msg2);
         Message text3 = Message.fromString(msg3);
+        Message text4 = Message.fromString(msg4);
+        Message text5 = Message.fromString(msg5);
 
         assert text0.toString().equals(msg0);
         assert text1.toString().equals(msg1);
         assert text2.toString().equals(msg2);
         assert text3.toString().equals(msg3);
+        assert text4.toString().equals(msg4);
+        assert text5.toString().equals(msg5);
 
         System.out.println(text0.toString());
         System.out.println(text1.toString());
         System.out.println(text2.toString());
         System.out.println(text3.toString());
+        System.out.println(text4.toString());
+        System.out.println(text5.toString());
     }
 
 }

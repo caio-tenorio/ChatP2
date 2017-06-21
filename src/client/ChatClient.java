@@ -131,7 +131,9 @@ public class ChatClient implements Runnable {
                     stop();
                     break;
                 case "NICK":
-                    System.out.println(msg.getSource() + " mudou de apelido para " + msg.getTarget());
+                    //System.out.println(msg.getSource() + " mudou de apelido para " + msg.getTarget());
+                    System.out.println("Seu nickname agora é " + msg.getSource());
+                    this.userName = msg.getSource();
                     break;
                 default:
                     System.out.println("Mensagem desconhecida: " + msg.toString());

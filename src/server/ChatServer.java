@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import common.ByeMessage;
-import common.ErrorMessage;
-import common.Message;
+import common.*;
 
 public class ChatServer implements Runnable {
     private ChatServerThread clients[] = new ChatServerThread[50];
@@ -83,28 +81,70 @@ public class ChatServer implements Runnable {
 //    }
 
     public synchronized void handle(int senderID, Message msg) {
+//        if (msg.getCommand().equals("BYE")) {
+//            //clients[findClient(ID)].send(".bye");
+//            clients[findClient(senderID)].send(new ByeMessage());
+//            remove(senderID);
+//        } else {
+//            if (msg.getCommand().equals("TEXT")) {
+//                if (msg.getTarget() != null) {
+//                    ChatServerThread targetClient = mapNicknameToClient.get(msg.getTarget());
+//                    if (targetClient != null) {
+//                        targetClient.send(msg);
+//                    } else {
+//                        ChatServerThread senderClient = clients[findClient(senderID)];
+//                        senderClient.send(new ErrorMessage("TEXT_SENT_TO_INVALID_NICKNAME", "Nickname doesn't exist: " + msg.getTarget()));
+//                    }
+//                } else {
+//                    for (int i = 0; i < clientCount; i++) {
+//                        clients[i].send(msg);
+//                    }
+//                }
+//            } else {
+//                System.out.println("#" + senderID + "# " + msg.toString());
+//            }
+//        }
+
+        ChatServerThread senderClient = clients[findClient(senderID)];
+
         if (msg.getCommand().equals("BYE")) {
             //clients[findClient(ID)].send(".bye");
             clients[findClient(senderID)].send(new ByeMessage());
             remove(senderID);
-        } else {
-            if (msg.getCommand().equals("TEXT")) {
-                if (msg.getTarget() != null) {
-                    ChatServerThread targetClient = mapNicknameToClient.get(msg.getTarget());
-                    if (targetClient != null) {
-                        targetClient.send(msg);
-                    } else {
-                        ChatServerThread senderClient = clients[findClient(senderID)];
-                        senderClient.send(new ErrorMessage("TEXT_SENT_TO_INVALID_NICKNAME", "Nickname doesn't exist: " + msg.getTarget()));
-                    }
+        } else if (msg.getCommand().equals("TEXT")) {
+            if (msg.getTarget() != null) {
+                ChatServerThread targetClient = mapNicknameToClient.get(msg.getTarget());
+                if (targetClient != null) {
+                    targetClient.send(msg);
                 } else {
-                    for (int i = 0; i < clientCount; i++) {
-                        clients[i].send(msg);
-                    }
+                    //ChatServerThread senderClient = clients[findClient(senderID)];
+                    senderClient.send(new ErrorMessage("TEXT_SENT_TO_INVALID_NICKNAME", "Nickname doesn't exist: " + msg.getTarget()));
                 }
             } else {
-                System.out.println("#" + senderID + "# " + msg.toString());
+                for (int i = 0; i < clientCount; i++) {
+                    clients[i].send(msg);
+                }
             }
+        } else if (msg.getCommand().equals("NICK")) {
+            try {
+                NickMessage nickMessage = new NickMessage(msg);
+                //nickMessage.validate();
+
+                String desiredNickname = nickMessage.getDesiredNickname();
+
+                if (mapNicknameToClient.containsKey(desiredNickname)) {
+                    senderClient.send(new ErrorMessage("NICK_ALREADY_IN_USE", "Nickname já está em uso!"));
+                } else {
+                    mapNicknameToClient.remove(getKeyByValue(mapNicknameToClient, senderClient));
+                    mapNicknameToClient.put(desiredNickname, senderClient);
+                    senderClient.send(new NickMessage(desiredNickname));
+                }
+
+            } catch (InvalidNicknameException ine) {
+                senderClient.send(new ErrorMessage("NICK_INVALID", ine.getMessage()));
+            }
+        } else {
+            System.out.println("#" + senderID + "# " + msg.toString());
         }
     }
 
