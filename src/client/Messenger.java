@@ -206,7 +206,22 @@ public class Messenger extends Application implements IChatMessageHandler {
     }
 
     public void actionButtonEnviar() {
-        chatClient.send(new TextMessage(userName.getText(), mensagem.getText()));
+//        chatClient.send(new TextMessage(userName.getText(), mensagem.getText()));
+//        mensagem.setText("");
+
+        String line = mensagem.getText();
+        String user = userName.getText();
+        if (line.startsWith("/:")) {
+            chatClient.send(Message.fromString(line.substring(2)));
+        } else {
+            if (!line.startsWith("/")) {
+                chatClient.send(new TextMessage(user, line));
+            } else {
+                if (line.startsWith("/quit") || line.startsWith("/bye")) {
+                    chatClient.send(new ByeMessage());
+                }
+            }
+        }
         mensagem.setText("");
     }
 
@@ -222,7 +237,7 @@ public class Messenger extends Application implements IChatMessageHandler {
     }
 
     @Override
-    public void handleMessage(Message msg) {
+    public synchronized void handleMessage(Message msg) {
         if (msg.getCommand().equals("TEXT")) {
             if (msg.getSource() != null) {
                 conversa.appendText("<" + msg.getSource() + "> ");
@@ -230,11 +245,26 @@ public class Messenger extends Application implements IChatMessageHandler {
             conversa.appendText(msg.getMessage() + "\n");
         }
 
+        if (msg.getCommand().equals("NICK")) {
+            System.out.println("Seu nickname agora é " + msg.getSource());
+
+            conversa.appendText("Seu nickname agora é " + msg.getSource() + "\n");
+            this.userName.setText(msg.getSource());
+        }
+
         if (msg.getCommand().equals("BYE")) {
             System.out.println("Good bye. Press RETURN to exit ...");
             chatClient.stop();
         } else {
-            System.out.println(msg);
+            //System.out.println(msg);
+        }
+
+        if (msg.getCommand().equals("ERROR")) {
+            // TRATAR OS ERROS!
+            System.out.println(msg.toString());
+            if (msg.getMessage() != null) {
+                conversa.appendText("ERRO: " + msg.getMessage() + "\n");
+            }
         }
     }
 }
