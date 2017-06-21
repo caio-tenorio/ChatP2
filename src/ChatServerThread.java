@@ -46,7 +46,7 @@ public class ChatServerThread extends Thread {
         while (true) {
             try {
                 //server.handle(ID, streamIn.readUTF());
-                server.handle(ID, streamIn.readUTF());
+                server.handle(ID, Message.fromString(streamIn.readUTF()));
             } catch (IOException ioe) {
                 System.out.println(ID + " ERROR reading: " + ioe.getMessage());
                 server.remove(ID);

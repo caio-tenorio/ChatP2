@@ -50,7 +50,19 @@ public class ChatClient implements Runnable {
             try {
                 //send(console.readLine());
                 //send(new TextMessage(console.readLine()));
-                send(new TextMessage(this.userName, console.readLine()));
+                String line = console.readLine();
+                if (line.startsWith("/:")) {
+                    send(Message.fromString(line.substring(2)));
+                } else {
+                    //send(new TextMessage(this.userName, console.readLine()));
+                    if (!line.startsWith("/")) {
+                        send(new TextMessage(this.userName, line));
+                    } else {
+                        if (line.startsWith("/quit") || line.startsWith("/bye")) {
+                            send(new ByeMessage());
+                        }
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -80,11 +80,17 @@ public class Message {
         String command = "MSG";
         String source = null;
         String target = null;
-        String message = "";
+        //String message = "";
+        String message = null;
+
+        if (str == null) {
+            return null;
+        }
 
         String[] parts = str.split(" :", 2);
         if (parts.length < 2) {
             // Erro! As mensagens têm que ter pelo menos o comando e o separador.
+            command = str;
         } else {
             String[] beforeMessage = parts[0].split(" ", 3);
             command = beforeMessage[0];
@@ -103,19 +109,23 @@ public class Message {
     }
 
     public static void main(String[] args) {
+        String msg0 = "QUIT";
         String msg1 = "TEXT :Text1";
         //String msg2 = "TEXT target :Text2";
         String msg2 = "TEXT source :Text2";
         String msg3 = "TEXT source target :Text3";
 
+        Message text0 = Message.fromString(msg0);
         Message text1 = Message.fromString(msg1);
         Message text2 = Message.fromString(msg2);
         Message text3 = Message.fromString(msg3);
 
+        assert text0.toString().equals(msg0);
         assert text1.toString().equals(msg1);
         assert text2.toString().equals(msg2);
         assert text3.toString().equals(msg3);
 
+        System.out.println(text0.toString());
         System.out.println(text1.toString());
         System.out.println(text2.toString());
         System.out.println(text3.toString());

@@ -1,11 +1,27 @@
 import java.net.*;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class ChatServer implements Runnable {
     private ChatServerThread clients[] = new ChatServerThread[50];
     private ServerSocket server = null;
     private Thread thread = null;
     private int clientCount = 0;
+
+    //private HashMap<Socket, String> mapSocketClient = new HashMap<Socket, String>();
+    private HashMap<String, ChatServerThread> mapNicknameToClient = new HashMap<String, ChatServerThread>();
+    //private HashMap<ChatServerThread, String> mapClientToNickname = new HashMap<ChatServerThread, String>();
+
+    public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+        for (Map.Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 
     public ChatServer(int port) {
         try {
@@ -51,23 +67,37 @@ public class ChatServer implements Runnable {
         return -1;
     }
 
-    public synchronized void handle(int ID, String input) {
-        if (input.endsWith(".bye")) {
-            clients[findClient(ID)].send(".bye");
-            remove(ID);
-        } else
-            for (int i = 0; i < clientCount; i++)
-                clients[i].send(input);
-    }
+//    public synchronized void handle(int ID, String input) {
+//        if (input.endsWith(".bye")) {
+//            clients[findClient(ID)].send(".bye");
+//            remove(ID);
+//        } else
+//            for (int i = 0; i < clientCount; i++)
+//                clients[i].send(input);
+//    }
 
-    public synchronized void handle(int ID, Message msg) {
+    public synchronized void handle(int senderID, Message msg) {
         if (msg.getCommand().equals("BYE")) {
             //clients[findClient(ID)].send(".bye");
-            clients[findClient(ID)].send(new ByeMessage());
-            remove(ID);
+            clients[findClient(senderID)].send(new ByeMessage());
+            remove(senderID);
         } else {
-            for (int i = 0; i < clientCount; i++) {
-                clients[i].send(msg);
+            if (msg.getCommand().equals("TEXT")) {
+                if (msg.getTarget() != null) {
+                    ChatServerThread targetClient = mapNicknameToClient.get(msg.getTarget());
+                    if (targetClient != null) {
+                        targetClient.send(msg);
+                    } else {
+                        ChatServerThread senderClient = clients[findClient(senderID)];
+                        senderClient.send(new ErrorMessage("TEXT_SENT_TO_INVALID_NICKNAME", "Nickname doesn't exist: " + msg.getTarget()));
+                    }
+                } else {
+                    for (int i = 0; i < clientCount; i++) {
+                        clients[i].send(msg);
+                    }
+                }
+            } else {
+                System.out.println("#" + senderID + "# " + msg.toString());
             }
         }
     }
@@ -83,6 +113,9 @@ public class ChatServer implements Runnable {
             clientCount--;
             try {
                 toTerminate.close();
+
+                mapNicknameToClient.remove(getKeyByValue(mapNicknameToClient, toTerminate));
+                System.out.println("List of clients: " + mapNicknameToClient.keySet());
             } catch (IOException ioe) {
                 System.out.println("Error closing thread: " + ioe);
             }
@@ -94,6 +127,10 @@ public class ChatServer implements Runnable {
         if (clientCount < clients.length) {
             System.out.println("Client accepted: " + socket);
             clients[clientCount] = new ChatServerThread(this, socket);
+
+            mapNicknameToClient.put(Integer.toString(clients[clientCount].getID()), clients[clientCount]);
+            System.out.println("List of clients: " + mapNicknameToClient.keySet());
+
             try {
                 clients[clientCount].open();
                 clients[clientCount].start();
